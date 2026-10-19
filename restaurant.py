@@ -27,8 +27,4 @@ class Table:
     def is_free(self):
         return not self._is_occupied
 
-table = Table(5, 4)
-print(table.is_free())
-table.occupy()
-print(table.is_free())
-table.occupy()
+
