@@ -1,7 +1,6 @@
 class RestaurantError(Exception):
     pass
 
-
 class TableOccupiedError(RestaurantError):
     def __init__(self, table_number: int):
         self.table_number = table_number
@@ -18,8 +17,7 @@ class ItemNotFoundError(RestaurantError):
     def __init__(self, what: str, key):
         self.what = what
         self.key = key
-        super().__init__(f"Не найдено: {what.lower()} «{key}»")
-
+        super().__init__(f"Не найдено: {what.lower()} '{key}'")
 
 class OrderStatusError(RestaurantError):
     def __init__(self, order_number: int, current_status, action: str):
@@ -27,9 +25,8 @@ class OrderStatusError(RestaurantError):
         self.current_status = current_status
         super().__init__(
             f"Заказ №{order_number}: нельзя {action}, "
-            f"текущий статус — «{current_status.value}»"
+            f"текущий статус - '{current_status.value}'"
         )
-
 
 class StorageError(RestaurantError):
     pass

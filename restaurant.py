@@ -47,7 +47,7 @@ class Order:
 
     @property
     def items(self) -> dict[MenuItem, int]:
-        return dict(self._items)
+        return self._items
 
     def add_item(self, item: MenuItem, quantity: int = 1) -> None:
         if self._status != OrderStatus.CREATED:
@@ -62,15 +62,15 @@ class Order:
     def set_status(self, new_status: OrderStatus) -> None:
         if self._NEXT_STATUS.get(self._status) != new_status:
             raise OrderStatusError(
-                self.number, self._status, f"перевести в «{new_status.value}»"
+                self.number, self._status, f"перевести в '{new_status.value}'"
             )
         self._status = new_status
 
     def print_bill(self) -> str:
-        lines = [f"Счёт по заказу №{self.number}, стол №{self.table.number}"]
+        lines = [f"Счет по заказу №{self.number}, стол №{self.table.number}"]
         for item, qty in self._items.items():
-            lines.append(f"  {item.name} x{qty} = {item.price * qty:.0f} ₽")
-        lines.append(f"  ИТОГО: {self.total():.0f} ₽")
+            lines.append(f"  {item.name} x{qty} = {item.price * qty:.0f} руб")
+        lines.append(f"  ИТОГО: {self.total():.0f} руб")
         return "\n".join(lines)
 
 
@@ -107,15 +107,15 @@ class Restaurant:
 
     @property
     def tables(self) -> list[Table]:
-        return list(self._tables)
+        return self._tables
 
     @property
     def staff(self) -> list[Employee]:
-        return list(self._staff)
+        return self._staff
 
     @property
     def orders(self) -> list[Order]:
-        return list(self._orders)
+        return self._orders
 
     def add_table(self, seats: int, number: int | None = None) -> Table:
         if number is None:
@@ -149,11 +149,17 @@ class Restaurant:
     def fire(self, employee: Employee) -> None:
         self._staff.remove(employee)
 
-    def get_employee(self, name: str, role: type = Employee) -> Employee:
-        for emp in self._staff:
-            if emp.name.lower() == name.strip().lower() and isinstance(emp, role):
-                return emp
-        raise ItemNotFoundError("Сотрудник", name)
+    def get_waiter(self, name: str) -> Waiter:
+        for waiter in self.waiters():
+            if waiter.name.lower() == name.strip().lower():
+                return waiter
+        raise ItemNotFoundError("Официант", name)
+
+    def get_chef(self, name: str) -> Chef:
+        for chef in self.chefs():
+            if chef.name.lower() == name.strip().lower():
+                return chef
+        raise ItemNotFoundError("Повар", name)
 
     def waiters(self) -> list[Waiter]:
         return [e for e in self._staff if isinstance(e, Waiter)]

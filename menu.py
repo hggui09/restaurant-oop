@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from exceptions import ItemNotFoundError
 
 
@@ -31,7 +30,7 @@ class Dish(MenuItem):
         self.weight = weight
 
     def describe(self) -> str:
-        return f"{self.name} ({self.weight} г) — {self.price:.0f} ₽"
+        return f"{self.name} ({self.weight} г) - {self.price:.0f} руб"
 
 
 class Drink(MenuItem):
@@ -42,7 +41,7 @@ class Drink(MenuItem):
 
     def describe(self) -> str:
         alc = ", 18+" if self.is_alcoholic else ""
-        return f"{self.name} ({self.volume} мл{alc}) — {self.price:.0f} ₽"
+        return f"{self.name} ({self.volume} мл{alc}) - {self.price:.0f} руб"
 
 
 class Menu:
@@ -51,7 +50,7 @@ class Menu:
 
     @property
     def items(self) -> list[MenuItem]:
-        return list(self._items)
+        return self._items
 
     def add(self, item: MenuItem) -> None:
         self._items.append(item)

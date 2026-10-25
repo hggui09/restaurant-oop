@@ -9,8 +9,9 @@ from restaurant import Restaurant, Order
 
 
 def _restore_status(order: Order, target: OrderStatus) -> None:
-    statuses = list(OrderStatus)
-    for status in statuses[1:statuses.index(target) + 1]:
+    for status in [OrderStatus.COOKING, OrderStatus.READY, OrderStatus.PAID]:
+        if order.status == target:
+            break
         order.set_status(status)
 
 
@@ -39,7 +40,7 @@ def save_json(restaurant: Restaurant, path: str) -> None:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except OSError as e:
-        raise StorageError(f"Не удалось записать файл {path}: {e}") from e
+        raise StorageError(f"Не удалось записать файл {path}: {e}")
 
 
 def load_json(path: str) -> Restaurant:
@@ -47,9 +48,9 @@ def load_json(path: str) -> Restaurant:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError as e:
-        raise StorageError(f"Файл {path} не найден") from e
+        raise StorageError(f"Файл {path} не найден")
     except json.JSONDecodeError as e:
-        raise StorageError(f"Файл {path} повреждён: {e}") from e
+        raise StorageError(f"Файл {path} поврежден: {e}")
 
     try:
         r = Restaurant(data["name"])
@@ -64,7 +65,7 @@ def load_json(path: str) -> Restaurant:
         for o in data["orders"]:
             order = Order(
                 number=o["number"],
-                waiter=r.get_employee(o["waiter"], Waiter),
+                waiter=r.get_waiter(o["waiter"]),
                 table=r.get_table(o["table"]),
                 customer=Customer(o["customer"]["name"], o["customer"]["phone"]),
             )
@@ -73,8 +74,8 @@ def load_json(path: str) -> Restaurant:
             _restore_status(order, OrderStatus[o["status"]])
             r.add_existing_order(order)
         return r
-    except (KeyError, ValueError, TypeError, RestaurantError) as e:
-        raise StorageError(f"Неверная структура данных в {path}: {e}") from e
+    except (KeyError, ValueError, TypeError, AttributeError, RestaurantError) as e:
+        raise StorageError(f"Неверная структура данных в {path}: {e}")
 
 
 def _employee_to_dict(e) -> dict:
@@ -146,16 +147,16 @@ def save_xml(restaurant: Restaurant, path: str) -> None:
     try:
         tree.write(path, encoding="utf-8", xml_declaration=True)
     except OSError as e:
-        raise StorageError(f"Не удалось записать файл {path}: {e}") from e
+        raise StorageError(f"Не удалось записать файл {path}: {e}")
 
 
 def load_xml(path: str) -> Restaurant:
     try:
         root = ET.parse(path).getroot()
     except FileNotFoundError as e:
-        raise StorageError(f"Файл {path} не найден") from e
+        raise StorageError(f"Файл {path} не найден")
     except ET.ParseError as e:
-        raise StorageError(f"Файл {path} повреждён: {e}") from e
+        raise StorageError(f"Файл {path} поврежден: {e}")
 
     try:
         r = Restaurant(root.attrib["name"])
@@ -184,7 +185,7 @@ def load_xml(path: str) -> Restaurant:
             c = o.find("customer")
             order = Order(
                 number=int(o.get("number")),
-                waiter=r.get_employee(o.get("waiter"), Waiter),
+                waiter=r.get_waiter(o.get("waiter")),
                 table=r.get_table(int(o.get("table"))),
                 customer=Customer(c.get("name"), c.get("phone")),
             )
@@ -194,4 +195,4 @@ def load_xml(path: str) -> Restaurant:
             r.add_existing_order(order)
         return r
     except (KeyError, ValueError, TypeError, AttributeError, RestaurantError) as e:
-        raise StorageError(f"Неверная структура данных в {path}: {e}") from e
+        raise StorageError(f"Неверная структура данных в {path}: {e}")

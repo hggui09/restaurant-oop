@@ -30,18 +30,16 @@ def create_demo_restaurant() -> Restaurant:
 
 def ask_int(prompt: str) -> int:
     text = input(prompt).strip()
-    try:
-        return int(text)
-    except ValueError:
-        raise ValueError(f"«{text}» — не целое число") from None
+    if not text.isdigit():
+        raise ValueError(f"'{text}' - не целое число")
+    return int(text)
 
 
 def ask_float(prompt: str) -> float:
     text = input(prompt).strip().replace(",", ".")
-    try:
-        return float(text)
-    except ValueError:
-        raise ValueError(f"«{text}» — не число") from None
+    if not text.replace(".", "", 1).isdigit():
+        raise ValueError(f"'{text}' - не число")
+    return float(text)
 
 
 def show_menu(r: Restaurant) -> None:
@@ -63,10 +61,10 @@ def seat_guests(r: Restaurant) -> None:
 def create_order(r: Restaurant) -> None:
     table = r.get_table(ask_int("Номер стола: "))
     if table.is_free():
-        print("Этот стол свободен — сначала посадите гостей (пункт 3)")
+        print("Этот стол свободен - сначала посадите гостей (пункт 3)")
         return
     print("Официанты:", ", ".join(w.name for w in r.waiters()))
-    waiter = r.get_employee(input("Имя официанта: "), Waiter)
+    waiter = r.get_waiter(input("Имя официанта: "))
     customer = Customer(input("Имя гостя: "), input("Телефон гостя: "))
     order = r.take_order(table, waiter, customer)
     print(f"Создан заказ №{order.number}")
@@ -77,7 +75,7 @@ def add_to_order(r: Restaurant) -> None:
     item = r.menu.find(input("Название позиции: "))
     qty = ask_int("Количество: ")
     order.add_item(item, qty)
-    print(f"Добавлено: {item.name} x{qty}. Сумма заказа: {order.total():.0f} ₽")
+    print(f"Добавлено: {item.name} x{qty}. Сумма заказа: {order.total():.0f} руб")
 
 
 def cook_order(r: Restaurant) -> None:
@@ -86,7 +84,7 @@ def cook_order(r: Restaurant) -> None:
         print("В заказе нет ни одной позиции")
         return
     print("Повара:", ", ".join(c.name for c in r.chefs()))
-    chef = r.get_employee(input("Имя повара: "), Chef)
+    chef = r.get_chef(input("Имя повара: "))
     order.set_status(OrderStatus.COOKING)
     chef.cook(order)
     print(f"{chef} приготовил заказ №{order.number}")
@@ -95,15 +93,15 @@ def cook_order(r: Restaurant) -> None:
 def pay_order(r: Restaurant) -> None:
     order = r.get_order(ask_int("Номер заказа: "))
     print(order.print_bill())
-    choice = input("Способ оплаты (1 — карта, 2 — наличные): ").strip()
+    choice = input("Способ оплаты (1 - карта, 2 - наличные): ").strip()
     methods = {"1": PaymentMethod.CARD, "2": PaymentMethod.CASH}
     if choice not in methods:
         raise ValueError("Нужно ввести 1 или 2")
     tip = ask_float("Чаевые, %: ")
     payment = Payment(order, methods[choice], tip)
     payment.pay()
-    print(f"Оплачено {payment.total_with_tips():.0f} ₽ ({payment.method.value}), "
-          f"чаевые {payment.tips_amount():.0f} ₽ — официанту {order.waiter.name}")
+    print(f"Оплачено {payment.total_with_tips():.0f} руб ({payment.method.value}), "
+          f"чаевые {payment.tips_amount():.0f} руб - официанту {order.waiter.name}")
 
 
 def show_orders(r: Restaurant) -> None:
@@ -111,35 +109,30 @@ def show_orders(r: Restaurant) -> None:
         print("Заказов пока нет")
     for o in r.orders:
         print(f"  №{o.number}: стол {o.table.number}, {o.waiter.name}, "
-              f"{o.status.value}, {o.total():.0f} ₽")
+              f"{o.status.value}, {o.total():.0f} руб")
 
 
 def show_revenue(r: Restaurant) -> None:
-    print(f"Выручка: {r.revenue():.0f} ₽")
+    print(f"Выручка: {r.revenue():.0f} руб")
     for w in r.waiters():
-        print(f"  Чаевые {w.name}: {w.tips_total:.0f} ₽")
+        print(f"  Чаевые {w.name}: {w.tips_total:.0f} руб")
 
 
 def main() -> None:
     os.makedirs(DATA_DIR, exist_ok=True)
     r = create_demo_restaurant()
 
-    actions = {
-        "1": ("Показать меню", show_menu),
-        "2": ("Показать столы", show_tables),
-        "3": ("Посадить гостей", seat_guests),
-        "4": ("Создать заказ", create_order),
-        "5": ("Добавить позицию в заказ", add_to_order),
-        "6": ("Приготовить заказ", cook_order),
-        "7": ("Оплатить заказ", pay_order),
-        "8": ("Список заказов", show_orders),
-        "9": ("Выручка и чаевые", show_revenue),
-    }
-
     while True:
         print(f"\n===== {r.name} =====")
-        for key, (title, _) in actions.items():
-            print(f"{key}. {title}")
+        print("1. Показать меню")
+        print("2. Показать столы")
+        print("3. Посадить гостей")
+        print("4. Создать заказ")
+        print("5. Добавить позицию в заказ")
+        print("6. Приготовить заказ")
+        print("7. Оплатить заказ")
+        print("8. Список заказов")
+        print("9. Выручка и чаевые")
         print("10. Сохранить в JSON    11. Загрузить из JSON")
         print("12. Сохранить в XML     13. Загрузить из XML")
         print("0. Выход")
@@ -149,8 +142,24 @@ def main() -> None:
             if choice == "0":
                 print("До свидания!")
                 break
-            elif choice in actions:
-                actions[choice][1](r)
+            elif choice == "1":
+                show_menu(r)
+            elif choice == "2":
+                show_tables(r)
+            elif choice == "3":
+                seat_guests(r)
+            elif choice == "4":
+                create_order(r)
+            elif choice == "5":
+                add_to_order(r)
+            elif choice == "6":
+                cook_order(r)
+            elif choice == "7":
+                pay_order(r)
+            elif choice == "8":
+                show_orders(r)
+            elif choice == "9":
+                show_revenue(r)
             elif choice == "10":
                 storage.save_json(r, JSON_PATH)
                 print(f"Сохранено в {JSON_PATH}")
