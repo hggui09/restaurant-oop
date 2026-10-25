@@ -73,7 +73,6 @@ class Order:
         lines.append(f"  ИТОГО: {self.total():.0f} руб")
         return "\n".join(lines)
 
-
 class Payment:
     def __init__(self, order: Order, method: PaymentMethod, tip_percent: float = 0):
         if not 0 <= tip_percent <= 100:

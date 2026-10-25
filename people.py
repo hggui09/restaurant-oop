@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from enums import OrderStatus
 
-
 class Person(ABC):
     def __init__(self, name: str, phone: str):
         if not name.strip():
@@ -16,11 +15,9 @@ class Person(ABC):
     def __str__(self) -> str:
         return f"{self.get_role()} {self.name}"
 
-
 class Customer(Person):
     def get_role(self) -> str:
         return "Гость"
-
 
 class Employee(Person):
     def __init__(self, name: str, phone: str, salary: float, position: str):
@@ -59,7 +56,6 @@ class Waiter(Employee):
     def get_role(self) -> str:
         return "Официант"
 
-
 class Chef(Employee):
     def __init__(self, name: str, phone: str, salary: float, position: str = "Повар"):
         super().__init__(name, phone, salary, position)
@@ -69,3 +65,4 @@ class Chef(Employee):
 
     def get_role(self) -> str:
         return "Повар"
+

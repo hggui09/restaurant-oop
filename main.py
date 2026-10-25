@@ -11,7 +11,6 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 JSON_PATH = os.path.join(DATA_DIR, "restaurant.json")
 XML_PATH = os.path.join(DATA_DIR, "restaurant.xml")
 
-
 def create_demo_restaurant() -> Restaurant:
     r = Restaurant("У Анастасии")
     for seats in (2, 2, 4, 4, 6):

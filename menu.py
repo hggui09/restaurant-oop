@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from exceptions import ItemNotFoundError
 
-
 class MenuItem(ABC):
     def __init__(self, name: str, price: float):
         if not name.strip():

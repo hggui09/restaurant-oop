@@ -1,6 +1,5 @@
 import json
 import xml.etree.ElementTree as ET
-
 from enums import OrderStatus
 from exceptions import StorageError, RestaurantError
 from menu import Dish, Drink
@@ -41,7 +40,6 @@ def save_json(restaurant: Restaurant, path: str) -> None:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except OSError as e:
         raise StorageError(f"Не удалось записать файл {path}: {e}")
-
 
 def load_json(path: str) -> Restaurant:
     try:

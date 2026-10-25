@@ -6,12 +6,10 @@ class TableOccupiedError(RestaurantError):
         self.table_number = table_number
         super().__init__(f"Стол №{table_number} уже занят")
 
-
 class NoFreeTableError(RestaurantError):
     def __init__(self, guests: int):
         self.guests = guests
         super().__init__(f"Нет свободного стола на {guests} гост.")
-
 
 class ItemNotFoundError(RestaurantError):
     def __init__(self, what: str, key):
