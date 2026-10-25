@@ -1,0 +1,154 @@
+{
+  "name": "У Анастасии",
+  "tables": [
+    {
+      "number": 1,
+      "seats": 2,
+      "occupied": true
+    },
+    {
+      "number": 2,
+      "seats": 2,
+      "occupied": false
+    },
+    {
+      "number": 3,
+      "seats": 4,
+      "occupied": true
+    },
+    {
+      "number": 4,
+      "seats": 4,
+      "occupied": false
+    },
+    {
+      "number": 5,
+      "seats": 6,
+      "occupied": false
+    }
+  ],
+  "staff": [
+    {
+      "type": "Waiter",
+      "name": "Анна",
+      "phone": "+7 900 111-11-11",
+      "salary": 45000,
+      "position": "Официант",
+      "tips_total": 106.0
+    },
+    {
+      "type": "Waiter",
+      "name": "Олег",
+      "phone": "+7 900 222-22-22",
+      "salary": 45000,
+      "position": "Официант",
+      "tips_total": 0.0
+    },
+    {
+      "type": "Chef",
+      "name": "Иван",
+      "phone": "+7 900 333-33-33",
+      "salary": 80000,
+      "position": "Шеф-повар"
+    },
+    {
+      "type": "Chef",
+      "name": "Мария",
+      "phone": "+7 900 444-44-44",
+      "salary": 60000,
+      "position": "Повар"
+    }
+  ],
+  "menu": [
+    {
+      "type": "Dish",
+      "name": "Борщ",
+      "price": 350,
+      "weight": 300
+    },
+    {
+      "type": "Dish",
+      "name": "Паста с грибами",
+      "price": 520,
+      "weight": 280
+    },
+    {
+      "type": "Dish",
+      "name": "Стейк",
+      "price": 1200,
+      "weight": 250
+    },
+    {
+      "type": "Drink",
+      "name": "Морс",
+      "price": 180,
+      "volume": 300,
+      "is_alcoholic": false
+    },
+    {
+      "type": "Drink",
+      "name": "Вино красное",
+      "price": 450,
+      "volume": 150,
+      "is_alcoholic": true
+    }
+  ],
+  "orders": [
+    {
+      "number": 1,
+      "table": 1,
+      "waiter": "Анна",
+      "customer": {
+        "name": "Пётр",
+        "phone": "+7 999 123-45-67"
+      },
+      "status": "PAID",
+      "items": [
+        {
+          "name": "Борщ",
+          "quantity": 2
+        },
+        {
+          "name": "Морс",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "table": 3,
+      "waiter": "Олег",
+      "customer": {
+        "name": "Елена",
+        "phone": "+7 999 765-43-21"
+      },
+      "status": "COOKING",
+      "items": [
+        {
+          "name": "Стейк",
+          "quantity": 1
+        },
+        {
+          "name": "Вино красное",
+          "quantity": 2
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "table": 1,
+      "waiter": "Анна",
+      "customer": {
+        "name": "Дмитрий",
+        "phone": "+7 999 000-11-22"
+      },
+      "status": "CREATED",
+      "items": [
+        {
+          "name": "Паста с грибами",
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}

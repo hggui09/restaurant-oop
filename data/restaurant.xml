@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<restaurant name="У Анастасии">
+  <tables>
+    <table number="1" seats="2" occupied="true" />
+    <table number="2" seats="2" occupied="false" />
+    <table number="3" seats="4" occupied="true" />
+    <table number="4" seats="4" occupied="false" />
+    <table number="5" seats="6" occupied="false" />
+  </tables>
+  <staff>
+    <waiter name="Анна" phone="+7 900 111-11-11" salary="45000" position="Официант" tips_total="106.0" />
+    <waiter name="Олег" phone="+7 900 222-22-22" salary="45000" position="Официант" tips_total="0.0" />
+    <chef name="Иван" phone="+7 900 333-33-33" salary="80000" position="Шеф-повар" />
+    <chef name="Мария" phone="+7 900 444-44-44" salary="60000" position="Повар" />
+  </staff>
+  <menu>
+    <dish name="Борщ" price="350" weight="300" />
+    <dish name="Паста с грибами" price="520" weight="280" />
+    <dish name="Стейк" price="1200" weight="250" />
+    <drink name="Морс" price="180" volume="300" is_alcoholic="false" />
+    <drink name="Вино красное" price="450" volume="150" is_alcoholic="true" />
+  </menu>
+  <orders>
+    <order number="1" table="1" waiter="Анна" status="PAID">
+      <customer name="Пётр" phone="+7 999 123-45-67" />
+      <item name="Борщ" quantity="2" />
+      <item name="Морс" quantity="2" />
+    </order>
+    <order number="2" table="3" waiter="Олег" status="COOKING">
+      <customer name="Елена" phone="+7 999 765-43-21" />
+      <item name="Стейк" quantity="1" />
+      <item name="Вино красное" quantity="2" />
+    </order>
+    <order number="3" table="1" waiter="Анна" status="CREATED">
+      <customer name="Дмитрий" phone="+7 999 000-11-22" />
+      <item name="Паста с грибами" quantity="1" />
+    </order>
+  </orders>
+</restaurant>
