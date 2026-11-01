@@ -1,11 +1,17 @@
 import os
 
-from enums import OrderStatus, PaymentMethod
-from exceptions import RestaurantError, StorageError
-from menu import Dish, Drink
-from people import Customer, Waiter, Chef
-from restaurant import Restaurant, Payment
 import storage
+from exceptions.restaurant_error import RestaurantError
+from exceptions.storage_error import StorageError
+from models.chef import Chef
+from models.customer import Customer
+from models.dish import Dish
+from models.drink import Drink
+from models.order_status import OrderStatus
+from models.payment import Payment
+from models.payment_method import PaymentMethod
+from models.restaurant import Restaurant
+from models.waiter import Waiter
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 JSON_PATH = os.path.join(DATA_DIR, "restaurant.json")
@@ -62,8 +68,8 @@ def create_order(r: Restaurant) -> None:
     if table.is_free():
         print("Этот стол свободен - сначала посадите гостей (пункт 3)")
         return
-    print("Официанты:", ", ".join(w.name for w in r.waiters()))
-    waiter = r.get_waiter(input("Имя официанта: "))
+    print("Официанты:", ", ".join(w.name for w in r.waiters.get_all()))
+    waiter = r.waiters.get_by_name(input("Имя официанта: "))
     customer = Customer(input("Имя гостя: "), input("Телефон гостя: "))
     order = r.take_order(table, waiter, customer)
     print(f"Создан заказ №{order.number}")
@@ -82,8 +88,8 @@ def cook_order(r: Restaurant) -> None:
     if not order.items:
         print("В заказе нет ни одной позиции")
         return
-    print("Повара:", ", ".join(c.name for c in r.chefs()))
-    chef = r.get_chef(input("Имя повара: "))
+    print("Повара:", ", ".join(c.name for c in r.chefs.get_all()))
+    chef = r.chefs.get_by_name(input("Имя повара: "))
     order.set_status(OrderStatus.COOKING)
     chef.cook(order)
     print(f"{chef} приготовил заказ №{order.number}")
@@ -113,8 +119,9 @@ def show_orders(r: Restaurant) -> None:
 
 def show_revenue(r: Restaurant) -> None:
     print(f"Выручка: {r.revenue():.0f} руб")
-    for w in r.waiters():
+    for w in r.waiters.get_all():
         print(f"  Чаевые {w.name}: {w.tips_total:.0f} руб")
+    print(f"  Всего чаевых: {r.waiters.total_tips():.0f} руб")
 
 
 def main() -> None:

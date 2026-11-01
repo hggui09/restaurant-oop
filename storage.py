@@ -1,10 +1,15 @@
 import json
 import xml.etree.ElementTree as ET
-from enums import OrderStatus
-from exceptions import StorageError, RestaurantError
-from menu import Dish, Drink
-from people import Customer, Waiter, Chef
-from restaurant import Restaurant, Order
+from exceptions.restaurant_error import RestaurantError
+from exceptions.storage_error import StorageError
+from models.chef import Chef
+from models.customer import Customer
+from models.dish import Dish
+from models.drink import Drink
+from models.order import Order
+from models.order_status import OrderStatus
+from models.restaurant import Restaurant
+from models.waiter import Waiter
 
 
 def _restore_status(order: Order, target: OrderStatus) -> None:
@@ -45,7 +50,7 @@ def load_json(path: str) -> Restaurant:
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         raise StorageError(f"Файл {path} не найден")
     except json.JSONDecodeError as e:
         raise StorageError(f"Файл {path} поврежден: {e}")
@@ -63,7 +68,7 @@ def load_json(path: str) -> Restaurant:
         for o in data["orders"]:
             order = Order(
                 number=o["number"],
-                waiter=r.get_waiter(o["waiter"]),
+                waiter=r.waiters.get_by_name(o["waiter"]),
                 table=r.get_table(o["table"]),
                 customer=Customer(o["customer"]["name"], o["customer"]["phone"]),
             )
@@ -151,7 +156,7 @@ def save_xml(restaurant: Restaurant, path: str) -> None:
 def load_xml(path: str) -> Restaurant:
     try:
         root = ET.parse(path).getroot()
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         raise StorageError(f"Файл {path} не найден")
     except ET.ParseError as e:
         raise StorageError(f"Файл {path} поврежден: {e}")
@@ -183,7 +188,7 @@ def load_xml(path: str) -> Restaurant:
             c = o.find("customer")
             order = Order(
                 number=int(o.get("number")),
-                waiter=r.get_waiter(o.get("waiter")),
+                waiter=r.waiters.get_by_name(o.get("waiter")),
                 table=r.get_table(int(o.get("table"))),
                 customer=Customer(c.get("name"), c.get("phone")),
             )
